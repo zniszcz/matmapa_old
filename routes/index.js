@@ -8,13 +8,13 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/signup', passport.authenticate('local-signup', {
-  successRedirect: '/profile',
+  successRedirect: '/dashboard',
   failureRedirect: '/signup',
   failureFlash: true,
 }));
 
 router.post('/login', passport.authenticate('local-login', {
-  successRedirect: '/profile',
+  successRedirect: '/dashboard',
   failureRedirect: '/?error',
   failureFlash: true,
 }));
@@ -24,8 +24,8 @@ router.get('/logout', function(req, res) {
   res.redirect('/');
 });
 
-router.get('/profile', isLoggedIn, function(req, res) {
-  res.render('profile', { user: req.user });
+router.get('/dashboard', isLoggedIn, function(req, res) {
+  res.render('dashboard', { user: req.user });
 });
 
 module.exports = router;

@@ -49,6 +49,13 @@ app.use(flash());
 //     next();
 // });
 
+app.get('*', function(req, res, next) {
+  // put user into res.locals for easy access from templates
+  res.locals.loggedIn = (req.user) ? true : false;
+
+  next();
+});
+
 app.use('/', routes);
 app.use('/dashboard', dashboard);
 

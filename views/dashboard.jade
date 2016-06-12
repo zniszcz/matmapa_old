@@ -1,0 +1,50 @@
+extends layout
+block content
+  section.col-md-12
+    div.row(style="padding-top:70px;")
+      div(class=typeof name === "undefined" ? "col-md-12" : "col-md-8")
+        table.table.table-striped.table-hover.col-md-12
+          thead
+            tr
+              th id
+              th tytuł
+              th.text-right root id
+              th.text-right number of childs
+          tbody
+            tr
+              td 0
+              td Geometria
+              td 0
+              td 3
+            tr
+              td 0
+              td Geometria
+              td 0
+              td 3
+            tr
+              td 0
+              td Geometria
+              td 0
+              td 3
+          tfooter
+            tr
+              td(rowspan=4)
+      if(typeof name !== "undefined")    
+        div.col-md-4
+          h1 #{name}
+          p.lead
+            | #{description}
+          br
+          h4 ROOT:
+          ul.list-unstyled
+            each root in roots
+              li 
+                span.label.label-default #{root.id}
+                |  #{root.name}
+          br
+          h4 CHILDS:
+          ul.list-unstyled
+            each child in childs
+              li 
+                span.label.label-default #{child.id}
+                | #{child.name}
