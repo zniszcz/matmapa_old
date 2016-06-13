@@ -24,10 +24,6 @@ router.get('/logout', function(req, res) {
   res.redirect('/');
 });
 
-router.get('/dashboard', isLoggedIn, function(req, res) {
-  res.render('dashboard', { user: req.user });
-});
-
 module.exports = router;
 
 function isLoggedIn(req, res, next) {

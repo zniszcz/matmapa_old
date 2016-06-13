@@ -5,10 +5,6 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
-var routes = require('./routes/index');
-var dashboard = require('./routes/dashboard');
-var signup = require('./routes/signup');
-
 var port = process.env.PORT || 3000;
 
 var passport = require('passport');
@@ -56,6 +52,11 @@ app.get('*', function(req, res, next) {
 
   next();
 });
+
+var routes = require('./routes/index');
+var signup = require('./routes/signup');
+var dashboard = require('./routes/dashboard');
+
 
 app.use('/', routes);
 app.use('/signup', signup);

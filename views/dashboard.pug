@@ -10,29 +10,24 @@ block content
               th tytuł
               th.text-center roots id
               th.text-center number of childs
-          tbody.links
-            tr
-              //- td(colspan=4)
-                - console.log(locals);
-              //- each dupa in locals
-              td(colspan=4) #{locals}
-            //- each dupa in childs
-                tr
-                  td 
-                    a(href="/dashboard/"+dupa.id)
-                      | #{dupa.id}
-                  td 
-                    a(href="/dashboard/"+dupa.id)
-                      | #{dupa.name}
-                  td.text-center 
-                    each root in dupa.roots
-                      a(href="/dashboard/"+root)
-                        | #{root}, 
-                  td.text-center #{dupa.childs.length}
+          tbody.links  
+              each object in childs
+                  tr
+                    td 
+                      a(href="/dashboard/"+object.id)
+                        | #{object.id}
+                    td 
+                      a(href="/dashboard/"+object.id)
+                        | #{object.name}
+                    td.text-center 
+                      each root in object.roots
+                        a(href="/dashboard/"+root)
+                          | #{root}, 
+                    td.text-center #{object.childs.length}
           tfooter
             tr
               td(colspan=4)
-                form(action="/dashboard", method="POST")
+                form(action="/dashboard/"+id, method="POST")
                   div.input-group.btn-block
                     span.input-group-addon 
                       b Nowy child
