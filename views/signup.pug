@@ -1,0 +1,12 @@
+extends layout
+block content
+  div.col-md-12(style="padding-top: 70px")
+    form.form-signin.content(action='/signup', method="POST")
+      h2
+        | Zarejestruj się
+      div.form-group
+        input.form-control.input-block-level(type='text', name="email", placeholder='Email address')
+      div.form-group
+        input.form-control.input-block-level(type='password', name="password", placeholder='Password')
+      div.form-group      
+        button.btn.btn-block.btn-primary(type='submit') Sign up

@@ -10,8 +10,6 @@ block content
             h3
               | Największa platforma na świecie!
       .col-md-4
-        +tab-list(["logowanie","rejestracja"],0)
-          +tab("logowanie","active")
             form.form-signin.content(action='/login', method="POST")
               h2
                 | Zaloguj się
@@ -25,13 +23,3 @@ block content
                   | Zapamiętaj mnie
               div.form-group      
                 button.btn.btn-block.btn-primary(type='submit') Sign in
-          +tab("rejestracja")
-            form.form-signin.content(action='/signup', method="POST")
-              h2
-                | Zarejestruj się
-              div.form-group
-                input.form-control.input-block-level(type='text', name="email", placeholder='Email address')
-              div.form-group
-                input.form-control.input-block-level(type='password', name="password", placeholder='Password')
-              div.form-group      
-                button.btn.btn-block.btn-primary(type='submit') Sign up
