@@ -5,7 +5,7 @@ var bodyParser = require('body-parser');
 var lesson = require('../controllers/lessonController.js');
 
 
-router.get('/', isLoggedIn, function(req, res) {
+router.get('/', /* isLoggedIn, */ function(req, res) {
   var object = lesson.getLesson(0);
 
   prepareObject(object, function (query) {
@@ -13,7 +13,7 @@ router.get('/', isLoggedIn, function(req, res) {
   });
 });
 
-router.get('/:id', isLoggedIn, function(req, res) {
+router.get('/:id', /* isLoggedIn, */ function(req, res) {
   var object = lesson.getLesson(req.params.id);
 
   prepareObject(object, function (query) {
@@ -54,21 +54,30 @@ function prepareObject(object, callback) { // TODO: Napewno można inaczej zassa
       query.childs = [];
       query.roots = [];
 
-      function pass(child, i) {
+      function pass(o, i, t) {
         i--;
 
-        child.exec( function (e, q) {
-          query.childs[i] = q;
+        o.exec( function (e, q) {
+          //query[t].push(q); // wysrywa błąd o tutaj, na przypisaniu q
 
-          if(i <= 0)
-            callback(query);
+          if(t=='childs')
+            query.childs.push(q);
           else
-            pass(lesson.getLesson(query.childsID[i]),i);
+            query.roots.push(q);
+
+          if(i <= 0 && t == 'childs')
+            pass(lesson.getLesson(query[t+'ID'][i]),i, 'roots');
+          else if(i > 0)
+            pass(lesson.getLesson(query[t+'ID'][i]),i, t);
+          else
+            callback(query);
+
         });
 
       } // pass
 
-      pass(lesson.getLesson(query.childsID[0]), query.childsID.length)
+      pass(lesson.getLesson(query.childsID[0]), query.childsID.length, 'childs');
+      pass(lesson.getLesson(query.rootsID[0]), query.rootsID.length, 'roots');
 
   });
 }

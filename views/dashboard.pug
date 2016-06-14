@@ -13,7 +13,14 @@ block content
               th.text-center number of childs
           tbody.links  
                 //- tr
-                  td(colspan=4) #{childs.length}
+                  td(colspan=4)
+                      | Childs: 
+                      =JSON.stringify(childs)
+                      //- #{childs}
+                //- tr
+                  td(colspan=4)
+                      | Roots: 
+                      =JSON.stringify(roots)
                       //- #{childs}
           - if(childs.length > 0) {
               each object in childs
@@ -53,14 +60,27 @@ block content
         br
         h4 ROOT:
         ul.list-unstyled
-          //- each root in roots
-            li 
-              span.label.label-default #{root.id}
-              |  #{root.name}
+          - if(roots.length > 0) 
+              each root in roots
+                li 
+                  //- =JSON.stringify(root)
+                  a(href="/dashboard/"+root.id)
+                    span.label.label-default #{root.id}
+                    |  #{root.name}
+          - else 
+              div.well 
+                p
+                  | To obiekt główny - nie posiada rootów
         br
         h4 CHILDS:
         ul.list-unstyled
-          //- each child in childs
-            li 
-              span.label.label-default #{child.id}
-              |  #{child.name}
+          - if(childs.length > 0)
+              each child in childs
+                li 
+                  a(href="/dashboard/"+child.id)  
+                    span.label.label-default #{child.id}
+                    |  #{child.name}
+          -  else 
+              div.well 
+                p
+                  | To najniższy obiekt - nie posiada childów
