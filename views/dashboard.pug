@@ -2,7 +2,8 @@ extends layout
 block content
   section.col-md-12
     div.row(style="padding-top:70px;")
-      div(class=typeof name === "undefined" ? "col-md-12" : "col-md-8")
+      //- div(class=typeof name === "undefined" ? "col-md-12" : "col-md-8")
+      div.col-md-8
         table.table.table-striped.table-hover.col-md-12
           thead
             tr
@@ -11,6 +12,10 @@ block content
               th.text-center roots id
               th.text-center number of childs
           tbody.links  
+                //- tr
+                  td(colspan=4) #{childs.length}
+                      //- #{childs}
+          - if(childs.length > 0) {
               each object in childs
                   tr
                     td 
@@ -20,10 +25,16 @@ block content
                       a(href="/dashboard/"+object.id)
                         | #{object.name}
                     td.text-center 
-                      each root in object.roots
+                      each root in object.rootsID
                         a(href="/dashboard/"+root)
                           | #{root}, 
-                    td.text-center #{object.childs.length}
+                    td.text-center #{object.childsID.length}
+          - } else 
+              tr 
+                td(colspan=4)
+                  div.well 
+                    p.lead
+                      | Ten obiekt nie ma dzieci
           tfooter
             tr
               td(colspan=4)
@@ -35,22 +46,21 @@ block content
                     span.input-group-btn
                       button.btn.btn-default(type="button")
                         span.glyphicon.glyphicon-plus
-      if(typeof name !== "undefined")    
-        div.col-md-4
-          h1 #{name}
-          p.lead
-            | #{description}
-          br
-          h4 ROOT:
-          ul.list-unstyled
-            each root in roots
-              li 
-                span.label.label-default #{root.id}
-                |  #{root.name}
-          br
-          h4 CHILDS:
-          ul.list-unstyled
-            each child in childs
-              li 
-                span.label.label-default #{child.id}
-                |  #{child.name}
+      div.col-md-4
+        h1 #{name}
+        p.lead
+          | #{description}
+        br
+        h4 ROOT:
+        ul.list-unstyled
+          //- each root in roots
+            li 
+              span.label.label-default #{root.id}
+              |  #{root.name}
+        br
+        h4 CHILDS:
+        ul.list-unstyled
+          //- each child in childs
+            li 
+              span.label.label-default #{child.id}
+              |  #{child.name}

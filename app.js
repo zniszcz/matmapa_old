@@ -20,7 +20,7 @@ mongoose.connect(configDB.url);
 var app = express();
 
 var mongo = require('mongodb');
-var monk = require('monk');
+// var monk = require('monk');
 // var db = monk('localhost:27017/user');
 
 // view engine setup
