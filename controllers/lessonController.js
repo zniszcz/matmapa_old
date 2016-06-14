@@ -7,8 +7,8 @@ var Lesson = require('../models/lesson.js');
 //   id: 0,
 //   name: "Jestem rootem",
 //   description: "Mam troje dzieci - 1, 2 i 5",
-//   rootsID: [0],
-//   childsID: [1,2]
+//   rootsID: [],
+//   childsID: [1,2,5]
 // });
 // c[1] = new Lesson({
 //   id: 1,
@@ -20,7 +20,7 @@ var Lesson = require('../models/lesson.js');
 //   id: 2,
 //   name: "Jestem najstarszy, ale nie mam dzieci. Tylko siebie samego żeby przetestować exception później.",
 //   rootsID: [0],
-//   childsID: [2]
+//   childsID: []
 // });
 // c[3] = new Lesson({
 //   id: 3,
@@ -32,13 +32,13 @@ var Lesson = require('../models/lesson.js');
 //   id: 4,
 //   name: "Jestem średnim bezdzietnym dzieckiem. Mam siebie samego.",
 //   rootsID: [1],
-//   childsID: [4]
+//   childsID: []
 // });
 // c[5] = new Lesson({
 //   id: 5,
 //   name: "Jestem zjebany. Mam dwóch ojców.",
 //   rootsID: [0,3],
-//   childsID: [5]
+//   childsID: []
 // });
 //
 // for(i in c)

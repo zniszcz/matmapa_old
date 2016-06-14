@@ -61,23 +61,28 @@ function prepareObject(object, callback) { // TODO: Napewno można inaczej zassa
           //query[t].push(q); // wysrywa błąd o tutaj, na przypisaniu q
 
           if(t=='childs')
-            query.childs.push(q);
+            query.childs[i] = new Object(q);
           else
-            query.roots.push(q);
+            query.roots[i] = new Object(q);
 
-          if(i <= 0 && t == 'childs')
-            pass(lesson.getLesson(query[t+'ID'][i]),i, 'roots');
-          else if(i > 0)
+
+          if(i > 0)
             pass(lesson.getLesson(query[t+'ID'][i]),i, t);
+          else if(i <= 0 && t == 'childs')
+            pass(lesson.getLesson(query[t+'ID'][i]),i, 'roots');
           else
             callback(query);
 
+            console.log(q.name);
         });
 
       } // pass
 
-      pass(lesson.getLesson(query.childsID[0]), query.childsID.length, 'childs');
-      pass(lesson.getLesson(query.rootsID[0]), query.rootsID.length, 'roots');
+      
+      if(query.childsID[0])
+        pass(lesson.getLesson(query.childsID[0]), query.childsID.length, 'childs');
+      if(query.rootsID[0])
+        pass(lesson.getLesson(query.rootsID[0]), query.rootsID.length, 'roots');
 
   });
 }
