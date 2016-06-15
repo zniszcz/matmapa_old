@@ -3,10 +3,14 @@ var passport = require('passport');
 var router = express.Router();
 var bodyParser = require('body-parser');
 var lesson = require('../controllers/lessonController.js');
+var multer = require('multer'); // v1.0.5
+var upload = multer(); // for parsing multipart/form-data
 
+lesson.init();
 
 router.get('/', /* isLoggedIn, */ function(req, res) {
   var object = lesson.getLesson(0);
+
 
   prepareObject(object, function (query) {
     res.render('dashboard', query);
@@ -21,22 +25,14 @@ router.get('/:id', /* isLoggedIn, */ function(req, res) {
   });
 });
 
-// router.post('/:id', isLoggedIn, function (req, res) {
-//
-//   // TODO: Jeżeli istnieje to aktualizuj a nie dodawaj
-//   function exist() {
-//     return true;
-//   }
-//
-//   var object;
-//
-//   if(!exist())
-//     object = getObject();
-//
-//     console.log(req.body);
-//
-//   res.render('dashboard', object);
-// });
+router.post('/:id', upload.array(), /*isLoggedIn,*/ function (req, res) {
+
+
+    lesson.createObject(req.params.id , req.body.name , function (id) {
+        return res.redirect('/dashboard/'+id);
+    });
+
+});
 
 
 module.exports = router;
@@ -58,7 +54,6 @@ function prepareObject(object, callback) { // TODO: Napewno można inaczej zassa
         i--;
 
         o.exec( function (e, q) {
-          //query[t].push(q); // wysrywa błąd o tutaj, na przypisaniu q
 
           if(t=='childs')
             query.childs[i] = new Object(q);
@@ -72,16 +67,14 @@ function prepareObject(object, callback) { // TODO: Napewno można inaczej zassa
             pass(lesson.getLesson(query[t+'ID'][i]),i, 'roots');
           else
             callback(query);
-
-            console.log(q.name);
         });
 
       } // pass
 
-      
-      if(query.childsID[0])
+
+      if(query.childsID.length > 0)
         pass(lesson.getLesson(query.childsID[0]), query.childsID.length, 'childs');
-      if(query.rootsID[0])
+      if(query.rootsID.length > 0)
         pass(lesson.getLesson(query.rootsID[0]), query.rootsID.length, 'roots');
 
   });

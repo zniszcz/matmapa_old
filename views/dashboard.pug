@@ -12,18 +12,18 @@ block content
               th.text-center roots id
               th.text-center number of childs
           tbody.links  
-                //- tr
+                tr
                   td(colspan=4)
                       | Childs: 
                       =JSON.stringify(childs)
                       //- #{childs}
-                //- tr
+                tr
                   td(colspan=4)
                       | Roots: 
                       =JSON.stringify(roots)
                       //- #{childs}
           - if(childs.length > 0) {
-              each object in childs
+              //- each object in childs
                   tr
                     td 
                       a(href="/dashboard/"+object.id)
@@ -49,11 +49,11 @@ block content
                   div.input-group.btn-block
                     span.input-group-addon 
                       b Nowy child
-                    input(type="text").form-control
+                    input(type="text", name="name").form-control
                     span.input-group-btn
                       button.btn.btn-default(type="button")
                         span.glyphicon.glyphicon-plus
-      div.col-md-4
+      //- div.col-md-4
         h1 #{name}
         p.lead
           | #{description}

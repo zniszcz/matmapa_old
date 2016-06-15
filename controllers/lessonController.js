@@ -1,97 +1,115 @@
 var mongoose = require('mongoose');
 var Lesson = require('../models/lesson.js');
 
-// var c = [];
-//
-// c[0] = new Lesson({
-//   id: 0,
-//   name: "Jestem rootem",
-//   description: "Mam troje dzieci - 1, 2 i 5",
-//   rootsID: [],
-//   childsID: [1,2,5]
-// });
-// c[1] = new Lesson({
-//   id: 1,
-//   name: "Jestem najstarszy. Mam dwoje dzieci",
-//   rootsID: [0],
-//   childsID: [3]
-// });
-// c[2] = new Lesson({
-//   id: 2,
-//   name: "Jestem najstarszy, ale nie mam dzieci. Tylko siebie samego żeby przetestować exception później.",
-//   rootsID: [0],
-//   childsID: []
-// });
-// c[3] = new Lesson({
-//   id: 3,
-//   name: "Jestem średnim dzieckiem. Mam syna.",
-//   rootsID: [1],
-//   childsID: [5]
-// });
-// c[4] = new Lesson({
-//   id: 4,
-//   name: "Jestem średnim bezdzietnym dzieckiem. Mam siebie samego.",
-//   rootsID: [1],
-//   childsID: []
-// });
-// c[5] = new Lesson({
-//   id: 5,
-//   name: "Jestem zjebany. Mam dwóch ojców.",
-//   rootsID: [0,3],
-//   childsID: []
-// });
-//
-// for(i in c)
-// c[i].save(function(err) {
-//     if(err) throw err;
-//
-//     console.log("Zapisałem dodawanie");
-// });
+var c = [
 
+{
+  name: "Jestem rootem",
+  description: "Mam troje dzieci - 1, 2 i 5",
+  rootsID: [],
+  childsID: [1,2,5]
+},
+{
+  name: "Jestem najstarszy. Mam dwoje dzieci",
+  rootsID: [0],
+  childsID: [3]
+},
+{
+  name: "Jestem naaajstarszy, ale nie mam dzieci. Tylko siebie samego żeby przetestować exception później.",
+  rootsID: [0],
+  childsID: []
+},
+{
+  name: "Jestem średnim dzieckiem. Mam syna.",
+  rootsID: [1],
+  childsID: [5]
+},
+{
+  name: "Jesteem średnim bezdzietnym dzieckiem. Mam siebie samego.",
+  rootsID: [1],
+  childsID: []
+},
+{
+  name: "Jestem zjebany. Mam dwóch ojców.",
+  rootsID: [0,3],
+  childsID: []
+}];
 
 var response = {};
-response.sample = {
-  id: 0,
-  name: "Przykładowa lekcja ",
-  description: "Przykładowa notka",
-  roots: [
-    {
-      id: 1,
-      name: "Przykładowy korzeń"
-    }
-  ],
-  childs: [
-    {
-      id: 10,
-      name: "Przykładowe dziecko",
-      roots: [0,2,3],
-      childs: [1,2,3]
-    },
-    {
-      id: 11,
-      name: "Przykładowe dziecko",
-      roots: [0],
-      childs: [1,2,3]
-    },
-    {
-      id: 12,
-      name: "Przykładowe dziecko",
-      roots: [0],
-      childs: [1,2,3]
-    },
-    {
-      id: 13,
-      name: "Przykładowe dziecko",
-      roots: [0],
-      childs: [1,2,3]
-    }
-  ]
-};
+
+response.init = function () {
+  var names = [];
+  for(var i in c)
+    names.push(c[i].name)
+
+  Lesson.aggregate([{ $match: { name: {$in: names}}}], function (err, res) {
+        if(err) throw err;
+
+        if(res.length > 0)
+          console.log("Było "+res.length+" rekordów");
+        else
+          Lesson.create(c, function (err) {if (err) throw err; console.log("Zapisałem rekordy");});
+
+  });
+
+
+      // Lesson.findOne(function (err, obj) {
+          // console.log("# DUPA");
+          // if( !obj) {
+            // var lesson = new Lesson(c[i]);
+
+
+            // console.log(c[i].name);
+            // Lesson.create(lesson, function(err, obj) {
+            // });
+          // }
+    // });
+
+  }
+
 
 response.getLesson = function (id) {
   var query = Lesson.findOne({'id': id});
   query.select("id name description childsID rootsID" );
   return query;
+}
+
+response.createObject = function (id, name, callback) {
+
+      // ID jest ID roota
+
+    var query = Lesson.findOne({'name': name},
+      function (err, result) {
+
+        if(result) {
+           console.log("Potrzeba updatować");
+           callback({id: 0});
+        } else {
+
+          //
+          // parent.exec(function (err, object) {
+
+            var objectParams = {
+              name: name,
+              rootsID: [id],
+              childsID: []
+            };
+
+            Lesson.create( objectParams, function (err, object) {
+                if(err) throw err;
+
+                var parent = Lesson.findOneAndUpdate({"id": id}, {"$push": {"childsID": object.id}}, function (err, o) {
+                  callback(object.id);
+                });
+
+
+            });
+
+
+        }
+
+      });
+
 }
 
 module.exports = response;
