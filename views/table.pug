@@ -1,0 +1,54 @@
+extends dashboard
+block table
+  div.col-md-8
+    table.table.table-striped.table-hover.col-md-12
+      thead
+        tr
+          th id
+          th tytuł
+          th.text-center roots id
+          th.text-center number of childs
+      tbody.links  
+            //- tr
+              td(colspan=4)
+                  | Childs: 
+                  =JSON.stringify(childs)
+                  //- #{childs}
+            //- tr
+              td(colspan=4)
+                  | Roots: 
+                  =JSON.stringify(parents)
+                  //- #{childs}
+      //- - if(childs.length > 0) {
+          each child in childs
+            tr
+              td 
+                a(href="/dashboard/"+child._id)
+                  | #{child._id}
+              td 
+                a(href="/dashboard/"+child._id)
+                  | #{child.name}
+              td.text-center 
+                | Dupa
+                //- each parent in object.parents
+                  a(href="/dashboard/"+parent._id)
+                    | #{parent._id}, 
+              td.text-center Dupa 
+                //- #{child.childs.length}
+      //- - } else 
+          tr 
+            td(colspan=4)
+              div.well 
+                p.lead
+                  | Ten obiekt nie ma dzieci
+      tfooter
+        tr
+          td(colspan=4)
+            form(action="/dashboard/"+_id, method="POST")
+              div.input-group.btn-block
+                span.input-group-addon 
+                  b Nowy child
+                input(type="text", name="name").form-control
+                span.input-group-btn
+                  button.btn.btn-default(type="button")
+                    span.glyphicon.glyphicon-plus

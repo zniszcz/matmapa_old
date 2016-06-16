@@ -1,0 +1,131 @@
+extends layout
+block content
+  section.col-md-12
+    div.row(style="padding-top:70px;")
+      //- div(class=typeof name === "undefined" ? "col-md-12" : "col-md-8")
+      div.col-md-8
+        table.table.table-striped.table-hover.col-md-12
+          thead
+            tr
+              th id
+              th tytuł
+              th.text-center parents
+              th.text-center childs
+          tbody.links  
+                tr
+                  td(colspan=4)
+                      | Childs: 
+                      =JSON.stringify(childs)
+                      //- #{childs}
+                tr
+                  td(colspan=4)
+                      | Roots: 
+                      =JSON.stringify(parents)
+                      //- #{childs}
+          //- - if(childs.length > 0) {
+              each child in childs
+                tr
+                  td 
+                    a(href="/dashboard/"+child._id)
+                      | #{child._id}
+                  td 
+                    a(href="/dashboard/"+child._id)
+                      | #{child.name}
+                  td.text-center 
+                    | Dupa
+                    //- each parent in object.parents
+                      a(href="/dashboard/"+parent._id)
+                        | #{parent._id}, 
+                  td.text-center Dupa 
+                    //- #{child.childs.length}
+          //- - } else 
+              tr 
+                td(colspan=4)
+                  div.well 
+                    p.lead
+                      | Ten obiekt nie ma dzieci
+          tfooter
+            tr
+              td(colspan=4)
+                form(action="/dashboard/"+_id, method="POST")
+                  div.input-group.btn-block
+                    span.input-group-addon 
+                      b Nowy child
+                    input(type="text", name="name").form-control
+                    span.input-group-btn
+                      button.btn.btn-default(type="button")
+                        span.glyphicon.glyphicon-plus
+      div.col-md-4
+        h1 #{name}
+        p.lead
+          | #{description}
+        br
+        h4 
+          a.pull-right.btn.btn-xs.glyphicon.glyphicon-plus(href="/dashboard/"+_id+"/parent")
+          | PARENTS:
+        ul.list-unstyled
+          - if(parents.length > 0) 
+              each parent in parents
+                li 
+                  //- =JSON.stringify(parent)
+                  a(href="/dashboard/"+parent._id)
+                    | #{parent.name}
+          - else 
+              div.well 
+                p
+                  | To obiekt główny - nie posiada rootów
+        br
+        h4 CHILDS:
+        ul.list-unstyled
+          - if(childs.length > 0)
+              each child in childs
+                li 
+                  a(href="/dashboard/"+child._id)  
+                    span.label.label-default #{child._id}
+                    |  #{child.name}
+          -  else 
+              div.well 
+                p
+                  | To najniższy obiekt - nie posiada childów
+        
+    -if(modal && modal == 'parent')
+      form#parentDialog.modal.fade(tabindex="-1", role="dialog", action="/dashboard/"+_id+"/parent", method="post")
+        div.modal-dialog
+          div.modal-content
+            div.modal-header
+              button.close(type="button", data-dismiss="modal", aria-label="Close")
+                span(aria-hidden="true")
+                  | &times;
+              h4.modal-title Dodaj parent
+            div.modal-body
+              div.hero-unit
+                input.input-xxlarge.seach-query.form-control(type='text', placeholder="Filtr")
+              div.clearfix
+              br
+              div(style="max-height: 350px; overflow-y: auto;")
+                table.col-xs-12.table.table-striped
+                  thead
+                    tr
+                      th
+                      th ID
+                      th Name
+                      th Childs
+                      th Parents
+                    tbody
+                        each elem in list
+                          tr
+                            td
+                              div.checkbox
+                                label
+                                  input(type="checkbox", name="id" ,value=elem._id)
+                            td #{elem._id}
+                            td #{elem.name}
+                            td Childs
+                            td Parents
+                  //- tfooter
+              div.clearfix
+            div.modal-footer
+              button.btn.btn-default(type="button", data-dismiss="modal") Anuluj
+              button.btn.btn-primary(type="submit") Zapisz
+      script(type="text/javascript").
+          $('#parentDialog').modal('show');

@@ -2,32 +2,40 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var ObjectId = require('mongodb').ObjectId;
-var autoIncrement = require('mongoose-auto-increment');
-var connection = mongoose.createConnection(require('../config/database.js').url);
+// var autoIncrement = require('mongoose-auto-increment');
+// var connection = mongoose.createConnection(require('../config/database.js').url);
 
-autoIncrement.initialize(connection);
+// autoIncrement.initialize(connection);
 
 var lessonSchema = new Schema({
-    // _id: ObjectId,// unique: true, index: true},
-    // id: {type: Number},
+    // _id: {
+    //   type: ObjectId,
+    //   unique: true,
+    //   index: true
+    // },
     name: {
       type: String,
       required: true,
-      unique: false
+      unique: true
     },
     description: String,
-    parentsID: [
-      {type: Number,
-      ref: 'Lesson'}
-    ],
-    childsID: [
-      {type: Number,
-      ref: 'Lesson'}
+    parents:
+    []
+      // {
+      //     type: ObjectId,
+      //      ref: 'Lesson'
+      // }
+    ,
+    childs: [
+      // {
+      //     type: ObjectId,
+      //     ref: 'Lesson'
+      // }
     ]
 });
 
-var Lesson = mongoose.model('Lesson', lessonSchema);
+// lessonSchema.plugin(autoIncrement.plugin, 'Lesson');
 
-lessonSchema.plugin(autoIncrement.plugin, 'Lesson');
+var Lesson = mongoose.model('Lesson', lessonSchema);
 
 module.exports = Lesson;

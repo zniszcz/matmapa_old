@@ -1,0 +1,37 @@
+extends layout
+block content
+  section.col-md-12(style="padding-top:70px;")
+    table.table.table-striped.table-hover.col-md-12
+      thead
+        tr
+          th id
+          th tytuł
+          th.text-center parents
+          th.text-center childs
+      tbody.links  
+        //- each o in obj  
+          tr
+            td 
+              =JSON.stringify(o)
+        - if(obj.length > 0) {
+            each res in obj
+              tr
+                td 
+                  a(href="/dashboard/"+res._id)
+                    | #{res._id}
+                td 
+                  a(href="/dashboard/"+res._id)
+                    | #{res.name}
+                td.text-center 
+                  | Dupa
+                  //- each parent in object.parents
+                    a(href="/dashboard/"+parent._id)
+                      | #{parent._id}, 
+                td.text-center Dupa 
+                  //- #{child.childs.length}
+        - } else 
+            tr 
+              td(colspan=4)
+                div.well 
+                  p.lead
+                    | Niestety nie znaleziono wyniku

@@ -55,10 +55,12 @@ app.get('*', function(req, res, next) {
 
 var routes = require('./routes/index');
 var signup = require('./routes/signup');
+var api = require('./routes/api');
 var dashboard = require('./routes/dashboard');
 
 
 app.use('/', routes);
+app.use('/api', api);
 app.use('/signup', signup);
 app.use('/dashboard', dashboard);
 

@@ -1,0 +1,34 @@
+extends dashboard
+  block panel
+    div.col-md-4
+      h1 DUPADUPADUPA
+      h1 #{name}
+      p.lead
+        | #{description}
+      br
+      h4 ROOT:
+      ul.list-unstyled
+        - if(roots.length > 0) 
+            each root in roots
+              li 
+                //- =JSON.stringify(root)
+                a(href="/dashboard/"+root._id)
+                  span.label.label-default #{root._id}
+                  |  #{root.name}
+        - else 
+            div.well 
+              p
+                | To obiekt główny - nie posiada rootów
+      br
+      h4 childs:
+      ul.list-unstyled
+        - if(childs.length > 0)
+            each child in childs
+              li 
+                a(href="/dashboard/"+child._id)  
+                  span.label.label-default #{child._id}
+                  |  #{child.name}
+        -  else 
+            div.well 
+              p
+                | To najniższy obiekt - nie posiada childów

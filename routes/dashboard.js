@@ -3,35 +3,62 @@ var passport = require('passport');
 var router = express.Router();
 var bodyParser = require('body-parser');
 var lesson = require('../controllers/lessonController.js');
-var multer = require('multer'); // v1.0.5
-var upload = multer(); // for parsing multipart/form-data
 
 lesson.init();
 
 router.get('/', /* isLoggedIn, */ function(req, res) {
-  var object = lesson.getLesson(0);
 
-
-  prepareObject(object, function (query) {
-    res.render('dashboard', query);
-  });
+    lesson.findWhere( "this.parents.length == 0", function (obj) {
+        res.render('result', {obj: obj});
+    });
 });
 
 router.get('/:id', /* isLoggedIn, */ function(req, res) {
-  var object = lesson.getLesson(req.params.id);
-
-  prepareObject(object, function (query) {
-    res.render('dashboard', query);
+  lesson.getObject(req.params.id, function (obj) {
+    if(obj)
+      res.render('lesson', obj);
+    else
+      res.redirect('/dashboard/')
   });
 });
 
-router.post('/:id', upload.array(), /*isLoggedIn,*/ function (req, res) {
-
-
-    lesson.createObject(req.params.id , req.body.name , function (id) {
-        return res.redirect('/dashboard/'+id);
+router.get('/:id/parent', function(req, res) {
+  lesson.getAll(function (list) {
+      var find = list.slice(0);
+      for(i in find)
+        if(find[i]._id == req.params.id){
+          var obj = find[i];
+          obj.modal = 'parent';
+          // delete list[i];
+          obj.list = list;
+          return res.render('lesson', obj);
+        }
+      res.redirect('/dashboard/')
     });
+});
+router.post('/:id/parent', function(req, res) {
+    var query = [];
+    for( var i in req.body.id)
+      query.push(req.body.id[i].slice(1, (req.body.id[i].length - 1)));
+    lesson.createRelation('parents', req.params.id, query, function (err) {
+      var param = (err) ? "?error="+err: '';
+      res.redirect('/dashboard/'
+        +req.params.id+param
+      );
+    });
+});
 
+router.post('/search/', function (req, res) {
+  lesson.findObject(req.body.query, function (obj) {
+      console.log(JSON.stringify(obj, null, 4));
+      res.render('result', {obj: obj});
+  });
+});
+
+router.post('/:id',  /*isLoggedIn,*/ function (req, res) {
+  lesson.createObject(req.params.id , req.body.name , function (id) {
+    res.redirect('/dashboard/'+id);
+  });
 });
 
 
@@ -41,41 +68,4 @@ function isLoggedIn(req, res, next) {
   if (req.isAuthenticated())
       return next();
   res.redirect('/');
-}
-
-function prepareObject(object, callback) { // TODO: Napewno można inaczej zassać z bazy te obiekty. Mniej chujowo.
-  object.exec(function (err, query) {
-      if(err) return handleError(err);
-
-      query.childs = [];
-      query.roots = [];
-
-      function pass(o, i, t) {
-        i--;
-
-        o.exec( function (e, q) {
-
-          if(t=='childs')
-            query.childs[i] = new Object(q);
-          else
-            query.roots[i] = new Object(q);
-
-
-          if(i > 0)
-            pass(lesson.getLesson(query[t+'ID'][i]),i, t);
-          else if(i <= 0 && t == 'childs')
-            pass(lesson.getLesson(query[t+'ID'][i]),i, 'roots');
-          else
-            callback(query);
-        });
-
-      } // pass
-
-
-      if(query.childsID.length > 0)
-        pass(lesson.getLesson(query.childsID[0]), query.childsID.length, 'childs');
-      if(query.rootsID.length > 0)
-        pass(lesson.getLesson(query.rootsID[0]), query.rootsID.length, 'roots');
-
-  });
 }

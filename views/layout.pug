@@ -42,12 +42,12 @@ html(lang="en")
                     li.divider(role='separator')
                     li
                       a(href='#') One more separated link
-              //- form.navbar-form.navbar-right(role='search')
+              form.navbar-form.navbar-right(role='search', method='post', action="/dashboard/search/")
                 .input-group
                   .input-group-btn
                     button.btn.btn-default(type='submit')
                       span.glyphicon.glyphicon-search
-                  input.form-control(type='text', placeholder='Szukaj')
+                  input.form-control(type='text', name="query", placeholder='Szukaj')
               ul.nav.navbar-nav.navbar-left
                 if(loggedIn) 
                   li
