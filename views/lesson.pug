@@ -12,17 +12,17 @@ block content
               th.text-center parents
               th.text-center childs
           tbody.links  
-                tr
+                //- tr
                   td(colspan=4)
                       | Childs: 
                       =JSON.stringify(childs)
                       //- #{childs}
-                tr
+                //- tr
                   td(colspan=4)
                       | Roots: 
                       =JSON.stringify(parents)
                       //- #{childs}
-          //- - if(childs.length > 0) {
+          - if(childs.length > 0) {
               each child in childs
                 tr
                   td 
@@ -32,13 +32,15 @@ block content
                     a(href="/dashboard/"+child._id)
                       | #{child.name}
                   td.text-center 
-                    | Dupa
-                    //- each parent in object.parents
-                      a(href="/dashboard/"+parent._id)
-                        | #{parent._id}, 
-                  td.text-center Dupa 
-                    //- #{child.childs.length}
-          //- - } else 
+                    -if(child.parents.length > 0)
+                        ul 
+                        each parent in child.parents
+                          li
+                            a(href="/dashboard/"+parent)
+                              | #{parent} 
+                  td.text-center  
+                    #{child.childs.length}
+          - } else 
               tr 
                 td(colspan=4)
                   div.well 
@@ -67,7 +69,7 @@ block content
           - if(parents.length > 0) 
               each parent in parents
                 li 
-                  //- =JSON.stringify(parent)
+                  //- =JSON.stringify(parents)
                   a(href="/dashboard/"+parent._id)
                     | #{parent.name}
           - else 
@@ -81,7 +83,7 @@ block content
               each child in childs
                 li 
                   a(href="/dashboard/"+child._id)  
-                    span.label.label-default #{child._id}
+                    //- span.label.label-default #{child._id}
                     |  #{child.name}
           -  else 
               div.well 

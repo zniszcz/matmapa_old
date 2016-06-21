@@ -40,7 +40,7 @@ router.post('/:id/parent', function(req, res) {
     var query = [];
     for( var i in req.body.id)
       query.push(req.body.id[i].slice(1, (req.body.id[i].length - 1)));
-    lesson.createRelation('parents', req.params.id, query, function (err) {
+    lesson.createRelation(0, req.params.id, query, function (err) {
       var param = (err) ? "?error="+err: '';
       res.redirect('/dashboard/'
         +req.params.id+param

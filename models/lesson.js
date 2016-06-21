@@ -8,11 +8,6 @@ var ObjectId = require('mongodb').ObjectId;
 // autoIncrement.initialize(connection);
 
 var lessonSchema = new Schema({
-    // _id: {
-    //   type: ObjectId,
-    //   unique: true,
-    //   index: true
-    // },
     name: {
       type: String,
       required: true,
@@ -20,19 +15,18 @@ var lessonSchema = new Schema({
     },
     description: String,
     parents:
-    []
-      // {
-      //     type: ObjectId,
-      //      ref: 'Lesson'
-      // }
+      {
+          type: [],
+          ref: 'Lesson'
+      }
     ,
-    childs: [
-      // {
-      //     type: ObjectId,
-      //     ref: 'Lesson'
-      // }
-    ]
+    childs:
+      {
+          type: [],
+          ref: 'Lesson'
+      }
 });
+
 
 // lessonSchema.plugin(autoIncrement.plugin, 'Lesson');
 

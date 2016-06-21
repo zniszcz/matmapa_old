@@ -2,43 +2,64 @@ var mongoose = require('mongoose');
 var ObjectId = mongoose.Schema.Types.ObjectId;
 var Lesson = require('../models/lesson.js');
 
+
 var c = [
   {
-    // _id: 0,
+    _id: "000000000000000000000001",
     name: "Jestem rootem",
-    description: "Mam troje dzieci - 1, 2 i 5",
-    // roots: [],
-    // childs: [1,2,5]
+    description: "Mam troje dzieci - 2, 5 i 6",
+    roots: [],
+    childs: [
+      "000000000000000000000002",
+      "000000000000000000000005",
+      "000000000000000000000006"
+    ]
   },
   {
-    // _id: 1,
+    _id: "000000000000000000000002",
     name: "Jestem najstarszy. Mam dwoje dzieci",
-    // parents: [0],
-    // childs: [3, 2]
+    parents: [
+      "000000000000000000000001"
+    ],
+    childs: [
+      "000000000000000000000003",
+      "000000000000000000000004"
+    ]
   },
   {
-    // _id: 2,
+    _id: "000000000000000000000003",
     name: "Jestem naaajstarszy, ale nie mam dzieci. Tylko siebie samego żeby przetestować exception później.",
-    // parents: [0],
-    // childs: []
+    parents: [
+      "000000000000000000000002"
+    ],
+    childs: []
   },
   {
-    // _id: 3,
+    _id: "000000000000000000000004",
     name: "Jestem średnim dzieckiem. Mam syna.",
-    // parents: [1],
-    // childs: [5]
+    parents: [
+      "000000000000000000000002"
+    ],
+    childs: [
+      "000000000000000000000006"
+    ]
   },
   {
-    // _id: 4,
+    _id: "000000000000000000000005",
     name: "Jesteem średnim bezdzietnym dzieckiem. Mam siebie samego.",
-    // parents: [1],
-    // childs: []
+    parents: [
+      "000000000000000000000001"
+    ],
+    childs: []
   },
   {
-    // _id: 5,
+    _id: "000000000000000000000006",
     name: "Jestem zjebany. Mam dwóch ojców.",
-    // parents: [0,3],
-    // childs: []
+    parents: [
+      "000000000000000000000001",
+      "000000000000000000000004"
+    ],
+    childs: []
   }
 ];
 
@@ -60,7 +81,7 @@ response.init = function () {
           console.log("Było "+res.length+" rekordów");
         else {
           for(var i in c)
-            console.log((d[i] = new Lesson(c[i]))._id);//tutaj
+            d[i] = new Lesson(c[i]);
 
             Lesson.create(d, function (err, obj) {
               if (err) throw err;
@@ -76,10 +97,31 @@ response.init = function () {
 response.getObject = function (query, callback) {
     if(isId(query)){
       var id = new mongoose.Types.ObjectId.createFromHexString(query);
-      Lesson.findOne({'_id': id}, function (err, obj) {
+      Lesson.find({$or: [{'_id': id}, {'parents': query}, {'childs': query} ]}, function (err, doc) {
           if(err) throw err;
-          // console.log(JSON.stringify(obj, null, 4));
-          callback(obj);
+
+          var object = doc.filter(function(element, index, array){ return query == element._id; //return a[b]._id == id;
+          })[0];
+
+          object.childs = doc.filter(
+            function(element, index, array){
+              for (var i in element.parents)
+                if (element.parents[i] == query)
+                  return true;
+              return false;
+            });
+
+          object.parents = doc.filter(
+            function(element, index, array){
+              for (var i in element.childs)
+                if (element.childs[i] == query)
+                  return true;
+              return false;
+            });
+
+          console.log(JSON.stringify(object, null, 4));
+
+          callback(object);
       });
     }
     else
@@ -135,16 +177,36 @@ response.createRelation = function (type, id, query, callback) {
     // Dodaj do tego z ID
     // Dodaj do tych w query
 
+    var types = ['parents', 'childs'];
+
     if(isId(id)){
       var _id = new mongoose.Types.ObjectId.createFromHexString(id),
           queries = [];
       for (var i in query)
-          queries[i] = new mongoose.Types.ObjectId.createFromHexString(query[i]);
-      Lesson.update({_id: _id}, {$push: {'roots': queries}}, function (err) {
-        Lesson.update({_id: _id}, {$push: {"childs": _id}}, function (err) {
+          if(isId(query[i]))
+            queries[i] = new mongoose.Types.ObjectId.createFromHexString(query[i]);
+          else
+            console.log("Został przekazany błędny ID: "+query[i]);
+
+
+      // Lesson.update({_id: _id}, {$push: {types[type]: queries}}, function (err) {
+        // if(err) throw err;
+    //     Lesson.update({_id: _id}, {$push: {"childs": _id}}, function (err) {
+    //       if(err) throw err;
+          // callback();
+    //     })
+      // });
+
+
+      Lesson.update({_id: {$in: queries}}, {$push: {childs: _id}},function (err) {
+        if(err) throw err;
+
+        Lesson.update({_id: _id }, {$push: {parents: queries}}, function (err) {
+          if(err) throw err;
           callback();
-        })
+        });
       });
+
     }
 }
 
@@ -175,11 +237,7 @@ response.createObject = function (id, name, callback) {
                 var parent = Lesson.findOneAndUpdate({"id": id}, {"$push": {"childsID": object.id}}, function (err, o) {
                   callback(object.id);
                 });
-
-
             });
-
-
         }
 
       });
@@ -189,9 +247,9 @@ response.createObject = function (id, name, callback) {
 module.exports = response;
 
 function isId(h) {
-    var is24Length = (h.length == 24 && typeof h === 'string'),
+    var is24Length = (h.length == 24),
         isHexidecimal = (parseInt(h,16).toString(16) === h.toLowerCase()),
-        isAtLeastTweleve = (h.length == 12)
+        isTweleve = (h.length == 12)
 
-  return is24Length || (isHexidecimal && isAtLeastTweleve);
+    return is24Length || (isHexidecimal && isTweleve);
 }
