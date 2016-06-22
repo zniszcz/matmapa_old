@@ -6,14 +6,14 @@ var lesson = require('../controllers/lessonController.js');
 
 lesson.init();
 
-router.get('/', /* isLoggedIn, */ function(req, res) {
+router.get('/',  isLoggedIn,  function(req, res) {
 
-    lesson.findWhere( "this.parents.length == 0", function (obj) {
+    lesson.getRoots( function (obj) {
         res.render('result', {obj: obj});
     });
 });
 
-router.get('/:id', /* isLoggedIn, */ function(req, res) {
+router.get('/:id',  isLoggedIn,  function(req, res) {
   lesson.getObject(req.params.id, function (obj) {
     if(obj)
       res.render('lesson', obj);
@@ -22,21 +22,31 @@ router.get('/:id', /* isLoggedIn, */ function(req, res) {
   });
 });
 
-router.get('/:id/parent', function(req, res) {
-  lesson.getAll(function (list) {
-      var find = list.slice(0);
-      for(i in find)
-        if(find[i]._id == req.params.id){
-          var obj = find[i];
-          obj.modal = 'parent';
-          // delete list[i];
-          obj.list = list;
-          return res.render('lesson', obj);
-        }
+router.get('/:id/parent', isLoggedIn, function(req, res) {
+  // lesson.getAll(function (list) {
+  //     var find = list.slice(0);
+  //     for(i in find)
+  //       if(find[i]._id == req.params.id){
+  //         var obj = find[i];
+  //         obj.modal = 'parent';
+  //         // delete list[i];
+  //         obj.list = list;
+  //         return res.render('lesson', obj);
+  //       }
+  //     res.redirect('/dashboard/')
+  //   });
+  lesson.getObject(req.params.id, function (obj) {
+    if(obj){
+      lesson.getAll(function (list) {
+        obj.list = list;
+        obj.modal = 'parent';
+        res.render('lesson', obj);
+      });
+    } else
       res.redirect('/dashboard/')
-    });
+  });
 });
-router.post('/:id/parent', function(req, res) {
+router.post('/:id/parent', isLoggedIn, function(req, res) {
     var query = [];
     for( var i in req.body.id)
       query.push(req.body.id[i].slice(1, (req.body.id[i].length - 1)));
@@ -48,14 +58,14 @@ router.post('/:id/parent', function(req, res) {
     });
 });
 
-router.post('/search/', function (req, res) {
+router.post('/search/', isLoggedIn, function (req, res) {
   lesson.findObject(req.body.query, function (obj) {
       console.log(JSON.stringify(obj, null, 4));
       res.render('result', {obj: obj});
   });
 });
 
-router.post('/:id',  /*isLoggedIn,*/ function (req, res) {
+router.post('/:id',  isLoggedIn, function (req, res) {
   lesson.createObject(req.params.id , req.body.name , function (id) {
     res.redirect('/dashboard/'+id);
   });
