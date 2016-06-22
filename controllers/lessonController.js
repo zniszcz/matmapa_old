@@ -8,7 +8,7 @@ var c = [
     _id: "000000000000000000000001",
     name: "Jestem rootem",
     description: "Mam troje dzieci - 2, 5 i 6",
-    roots: [],
+    parents: [],
     childs: [
       "000000000000000000000002",
       "000000000000000000000005",
@@ -60,6 +60,12 @@ var c = [
       "000000000000000000000004"
     ],
     childs: []
+  },
+  {
+    _id: "000000000000000000000007",
+    name: "Inny root",
+    parents: [],
+    childs: []
   }
 ];
 
@@ -94,7 +100,7 @@ response.init = function () {
   });
 }
 
-response.getObject = function (query, callback) {
+response.getObject = function (query, callback) { // assume the query is ID
     if(isId(query)){
       var id = new mongoose.Types.ObjectId.createFromHexString(query);
       Lesson.find({$or: [{'_id': id}, {'parents': query}, {'childs': query} ]}, function (err, doc) {
@@ -134,7 +140,7 @@ response.getAll = function (callback) {
       });
 }
 
-response.findObject = function (query, callback) {
+response.findObject = function (query, callback) { // query could be an ID, phrase of name or description
 
     // + Potrzebujesz obsługi nieznalezienia obiektu
     // + wtedy napisz obsługę szukania obiektu po id lub nazwie
@@ -170,6 +176,12 @@ response.findWhere = function (query, callback) {
       if(err) throw err;
       callback(obj);
     });
+}
+
+response.getRoots = function (callback) {
+  Lesson.find({ 'parents': []}, function (err, obj) {
+    callback(obj);
+  });
 }
 
 response.createRelation = function (type, id, query, callback) {
